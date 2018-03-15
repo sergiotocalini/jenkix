@@ -63,7 +63,8 @@ refresh_cache() {
 	    CURL_AUTH_FLAG="--user"
 	    CURL_AUTH_ATTR+="${JENKINS_USER}:${JENKINS_PASS}"
 	fi
-	curl -g -s ${CURL_AUTH_FLAG} "${CURL_AUTH_ATTR}" "${JENKINS_URL}/${RESOURCE}" | jq '.' > ${file}
+	curl -g -s ${CURL_AUTH_FLAG} "${CURL_AUTH_ATTR}" \
+	     "${JENKINS_URL}/${RESOURCE}" | jq '.' 2>/dev/null > ${file}
     fi
     echo "${file}"
 }
