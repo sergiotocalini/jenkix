@@ -82,6 +82,7 @@ discovery() {
 get_server_builds() {
     resource=${1}
     param1=${2}
+    param2=${3}
     json=$(refresh_cache)
     if [[ ${resource} =~ ^(failure|success)$ ]]; then
 	qfilter=`echo ${resource} | awk '{print toupper($0) }'`
@@ -100,6 +101,7 @@ get_server_builds() {
 get_server_jobs() {
     resource=${1}
     param1=${2}
+    param2=${3}
     json=$(refresh_cache)
     if [[ ${resource} == 'health_score_avg' ]]; then
 	raw=`jq -r ".jobs[].healthReport[].score" ${json}`
@@ -139,6 +141,34 @@ get_server_jobs() {
 }
 
 get_job_builds() {
+    resource=${1}
+    job=${2}
+    param1=${3}
+    json=$(refresh_cache)
+    if [[ ${resource} == 'health_score' ]]; then
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.healthReport[].score' ${json}`
+    elif [[ ${resource} == 'last_result' ]]; then
+	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.result' ${json}`
+	if [[ ${raw} == "SUCCESS" ]]; then
+	    res=1
+	fi
+    elif [[ ${resource} == 'last_timestamp' ]]; then
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.timestamp' ${json}`
+    elif [[ ${resource} == 'last_duration' ]]; then
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.duration' ${json}`
+    elif [[ ${resource} == 'last_number' ]]; then
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.number' ${json}`
+    elif [[ ${resource} =~ ^(failure|success)$ ]]; then
+	qfilter=`echo ${resource} | awk '{print toupper($0) }'`
+	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json}`
+	res=0
+	while read build; do
+	    build_time=`echo $(( ${build} / 1000 ))`
+	    if (( $(( (${TIMESTAMP}-${build_time})/60 )) < ${param1:-5} )); then
+		let "res=res+1"
+	    fi
+	done <<< ${raw}
+    fi
     echo ${res:-0}
 }
 
@@ -147,19 +177,51 @@ get_stats() {
     name=${2}
     resource=${3}
     param1=${4}
+    param2=${5}
     if [[ ${type} =~ ^server$ ]]; then
 	if [[ ${name} == 'jobs' ]]; then
-	    res=$( get_server_jobs ${resource} ${param1} )
+	    res=$( get_server_jobs ${resource} ${param1} ${param2} )
 	elif [[ ${name} == 'builds' ]]; then
-	    res=$( get_server_builds ${resource} ${param1} )
+	    res=$( get_server_builds ${resource} ${param1} ${param2} )
 	elif [[ ${name} == 'version' ]]; then
 	    res=`curl -s -I ${JENKINS_URL} | awk 'BEGIN {FS=": "}/^X-Jenkins:/{print $2}'`
 	fi
     elif [[ ${type} =~ ^job$ ]]; then
-        res=`jq -r ".${type}.\"${name}\".${resource}" ${json}`
+	if [[ ${name} == 'builds' ]]; then
+	    res=$( get_job_builds ${resource} ${param1} ${param2} )
+	elif [[ ${name} == 'active' ]]; then
+	    json=$(refresh_cache)
+	    raw=`jq -r '.jobs[]|select(.name=="'${resource}'")|.lastBuild.timestamp' ${json}`
+	    if [[ ${raw} != 'null' ]]; then
+		last=`echo $(( ${raw} / 1000 ))`
+		if (( $(( (${TIMESTAMP}-${last})/86400 )) < ${param1:-7} )); then
+		    res=1
+		fi
+	    fi	    
+	fi
     fi
     echo ${res:-0}
 }
+
+get_service() {
+    resource=${1}
+
+    port=`echo "${JENKINS_URL}" | sed -e 's|.*://||g' -e 's|/||g' | awk -F: '{print $2}'`
+    pid=`sudo lsof -Pi :${port:-8080} -sTCP:LISTEN -t`
+    rcode="${?}"
+    if [[ ${resource} == 'listen' ]]; then
+	if [[ ${rcode} == 0 ]]; then
+	    res=1
+	fi
+    elif [[ ${resource} == 'uptime' ]]; then
+	if [[ ${rcode} == 0 ]]; then
+	    res=`sudo ps -p ${pid} -o etimes -h`
+	fi
+    fi
+    echo ${res:-0}
+    return 0
+}
+
 #
 #################################################################################
 
@@ -215,6 +277,9 @@ else
     if [[ ${SECTION} == 'discovery' ]]; then
         rval=$(discovery ${ARGS[*]})
         rcode="${?}"
+    elif [[ ${SECTION} == 'service' ]]; then
+	rval=$( get_service ${ARGS[*]} )
+	rcode="${?}"	
     else
 	rval=$( get_stats ${SECTION} ${ARGS[*]} )
 	rcode="${?}"
