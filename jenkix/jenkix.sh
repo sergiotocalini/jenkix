@@ -162,7 +162,7 @@ get_job_builds() {
 	qfilter=`echo ${resource} | awk '{print toupper($0) }'`
 	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json}`
 	res=0
-	if [[ -z ${raw} ]]; then
+	if ! [[ -z ${raw} ]]; then
 	    while read build; do
 		build_time=`echo $(( ${build} / 1000 ))`
 		if (( $(( (${TIMESTAMP}-${build_time})/60 )) < ${param1:-5} )); then
