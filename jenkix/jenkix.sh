@@ -117,24 +117,24 @@ get_server_jobs() {
     elif [[ ${resource} == 'health_score_mode' ]]; then
 	raw=`jq -r ".jobs[].healthReport[].score" ${json} | sort -n`
 	res=`echo "${raw}" | uniq -c | sort -k 1 | tail -1 | awk '{print $2}'`
-    elif [[ ${resource} =~ ^(actives|inactives)$ ]]; then
+    elif [[ ${resource} =~ ^(active|inactive)$ ]]; then
 	raw=`jq -r ".jobs[].lastBuild.timestamp" ${json}`
-	actives=0
-	inactives=0
+	active=0
+	inactive=0
 	while read job; do
 	    if [[ ${job} != 'null' ]]; then
 		last=`echo $(( ${job} / 1000 ))`
 		if (( $(( (${TIMESTAMP}-${last})/86400 )) < ${param1:-7} )); then
-		    let "actives=actives+1"
+		    let "active=active+1"
 		else
-		    let "inactives=inactives+1"
+		    let "inactive=inactive+1"
 		fi
 	    fi
 	done <<< ${raw}
-	if [[ ${resource} == 'actives' ]]; then
-	    res=${actives}
+	if [[ ${resource} == 'active' ]]; then
+	    res=${active}
 	else
-	    res=${inactives}
+	    res=${inactive}
 	fi
     fi
     echo ${res:-0}
