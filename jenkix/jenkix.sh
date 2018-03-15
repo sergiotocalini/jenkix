@@ -107,7 +107,7 @@ get_server_jobs() {
 	raw=`jq -r ".jobs[].healthReport[].score" ${json}`
 	all=`echo "${raw}" | wc -l | awk '{$1=$1};1'`
 	sum=`echo "${raw}" | paste -sd+ - | bc`
-	res=`echo "${sum}/${all}" | bc`
+	res=`echo $(( ${sum} / ${all} ))`
     elif [[ ${resource} == 'health_score_median' ]]; then
 	raw=`jq -r ".jobs[].healthReport[].score" ${json} | sort -n`
 	all=`echo "${raw}" | wc -l | awk '{$1=$1};1'`
@@ -162,12 +162,14 @@ get_job_builds() {
 	qfilter=`echo ${resource} | awk '{print toupper($0) }'`
 	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json}`
 	res=0
-	while read build; do
-	    build_time=`echo $(( ${build} / 1000 ))`
-	    if (( $(( (${TIMESTAMP}-${build_time})/60 )) < ${param1:-5} )); then
-		let "res=res+1"
-	    fi
-	done <<< ${raw}
+	if [[ -z ${raw} ]]; then
+	    while read build; do
+		build_time=`echo $(( ${build} / 1000 ))`
+		if (( $(( (${TIMESTAMP}-${build_time})/60 )) < ${param1:-5} )); then
+		    let "res=res+1"
+		fi
+	    done <<< ${raw}
+	fi
     fi
     echo ${res:-0}
 }
