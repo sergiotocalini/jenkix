@@ -109,7 +109,7 @@ get_server_jobs() {
 	raw=`jq -r ".jobs[].healthReport[].score" ${json}`
 	all=`echo "${raw}" | wc -l | awk '{$1=$1};1'`
 	sum=`echo "${raw}" | paste -sd+ - | bc`
-	res=`echo $(( ${sum} / ${all} ))`
+	res=`echo $(( ${sum:-0} / ${all} ))`
     elif [[ ${resource} == 'health_score_median' ]]; then
 	raw=`jq -r ".jobs[].healthReport[].score" ${json} | sort -n`
 	all=`echo "${raw}" | wc -l | awk '{$1=$1};1'`
