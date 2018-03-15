@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.4</version>
-    <date>2018-03-15T12:49:53Z</date>
+    <date>2018-03-15T15:02:48Z</date>
     <groups>
         <group>
             <name>Templates</name>
@@ -318,9 +318,9 @@
                     <key>jenkix[server, version]</key>
                     <delay>12h</delay>
                     <history>30d</history>
-                    <trends>90d</trends>
+                    <trends>0</trends>
                     <status>0</status>
-                    <value_type>3</value_type>
+                    <value_type>1</value_type>
                     <allowed_hosts/>
                     <units/>
                     <snmpv3_contextname/>
@@ -442,7 +442,7 @@
                     <snmp_oid/>
                     <key>jenkix.discovery[jobs, JOB_NAME]</key>
                     <delay>12h</delay>
-                    <status>0</status>
+                    <status>1</status>
                     <allowed_hosts/>
                     <snmpv3_contextname/>
                     <snmpv3_securityname/>
