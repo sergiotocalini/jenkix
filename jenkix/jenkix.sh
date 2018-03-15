@@ -88,12 +88,14 @@ get_server_builds() {
 	qfilter=`echo ${resource} | awk '{print toupper($0) }'`
 	raw=`jq -r '.jobs[].builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json}`
 	res=0
-	while read build; do
-	    build_time=`echo $(( ${build} / 1000 ))`
-	    if (( $(( (${TIMESTAMP}-${build_time})/60 )) < ${param1:-5} )); then
-		let "res=res+1"
-	    fi
-	done <<< ${raw}	    
+	if ! [[ -z ${raw} ]]; then
+	    while read build; do
+		build_time=`echo $(( ${build} / 1000 ))`
+		if (( $(( (${TIMESTAMP}-${build_time})/60 )) < ${param1:-5} )); then
+		    let "res=res+1"
+		fi
+	    done <<< ${raw}
+	fi
     fi
     echo ${res:-0}
 }
