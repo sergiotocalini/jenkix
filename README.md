@@ -20,6 +20,10 @@ Zabbix Agent - Jenkins
 # Deploy
 ## Zabbix
 
+The username and the password can be empty if jenkins has the read only option enable.
+Default variables:
+* JENKINS_URL="http://localhost:8080"
+
     #~ git clone https://github.com/sergiotocalini/jenkix.git
     #~ sudo ./jenkix/deploy_zabbix.sh "<JENKINS_URL>" "<JENKINS_USER>" "<JENKINS_PASS>"
     #~ sudo systemctl restart zabbix-agent
