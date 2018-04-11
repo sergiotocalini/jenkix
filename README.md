@@ -27,7 +27,7 @@ JENKINS_URL|http://localhost:8080
 JENKINS_USER|<empty>
 JENKINS_PASS|<empty>
 
-*Note: this variables has to be saved in the config file (jenkix.conf) in the same directory than the script.
+*Note: this variables has to be saved in the config file (jenkix.conf) in the same directory than the script.*
 
 ## Zabbix
 
