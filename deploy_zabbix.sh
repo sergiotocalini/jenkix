@@ -11,10 +11,9 @@ mkdir -p ${ZABBIX_DIR}/scripts/agentd/jenkix
 ZABBIX_SCRIPT_CONFIG=${ZABBIX_DIR}/scripts/agentd/jenkix/jenkix.conf
 if [[ -f ${ZABBIX_DIR}/scripts/agentd/jenkix/jenkix.conf ]]; then
     ZABBIX_SCRIPT_CONFIG=${ZABBIX_DIR}/scripts/agentd/jenkix/jenkix.conf.new
-else
-    cp -rpv ${SOURCE_DIR}/jenkix/jenkix.conf.example  ${ZABBIX_SCRIPT_CONFIG}
 fi
 
+cp -rpv ${SOURCE_DIR}/jenkix/jenkix.conf.example  ${ZABBIX_SCRIPT_CONFIG}
 cp -rpv ${SOURCE_DIR}/jenkix/jenkix.sh            ${ZABBIX_DIR}/scripts/agentd/jenkix/
 cp -rpv ${SOURCE_DIR}/jenkix/zabbix_agentd.conf   ${ZABBIX_DIR}/zabbix_agentd.d/jenkix.conf
 
