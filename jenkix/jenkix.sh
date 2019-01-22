@@ -73,7 +73,7 @@ discovery() {
     resource=${1}
     json=$(refresh_cache)
     if [[ ${resource} == 'jobs' ]]; then
-	for job in `jq -r '.jobs[].name' ${json}`; do
+	for job in `jq -r '.jobs[].name' ${json} 2>/dev/null`; do
 	    echo "${job}"
 	done
     fi
@@ -87,7 +87,7 @@ get_server_builds() {
     json=$(refresh_cache)
     if [[ ${resource} =~ ^(failure|success)$ ]]; then
 	qfilter=`echo ${resource} | awk '{print toupper($0) }'`
-	raw=`jq -r '.jobs[].builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json}`
+	raw=`jq -r '.jobs[].builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json} 2>/dev/null`
 	res=0
 	if ! [[ -z ${raw} ]]; then
 	    while read build; do
@@ -107,21 +107,21 @@ get_server_jobs() {
     param2=${3}
     json=$(refresh_cache)
     if [[ ${resource} == 'health_score_avg' ]]; then
-	raw=`jq -r ".jobs[].healthReport[].score" ${json}`
+	raw=`jq -r ".jobs[].healthReport[].score" ${json} 2>/dev/null`
 	all=`echo "${raw}" | wc -l | awk '{$1=$1};1'`
 	sum=`echo "${raw:-0}" | paste -sd+ - | bc`
 	res=`echo $(( ${sum:-0} / ${all} ))`
     elif [[ ${resource} == 'health_score_median' ]]; then
-	raw=`jq -r ".jobs[].healthReport[].score" ${json} | sort -n`
+	raw=`jq -r ".jobs[].healthReport[].score" ${json} 2>/dev/null | sort -n`
 	all=`echo "${raw}" | wc -l | awk '{$1=$1};1'`
 	[ $((${all}%2)) -ne 0 ] && let "all=all+1"
 	num=`echo $(( ${all} / 2))`
 	res=`sed -n "${num}"p <<< "${raw}"`
     elif [[ ${resource} == 'health_score_mode' ]]; then
-	raw=`jq -r ".jobs[].healthReport[].score" ${json} | sort -n`
+	raw=`jq -r ".jobs[].healthReport[].score" ${json} 2>/dev/null | sort -n`
 	res=`echo "${raw}" | uniq -c | sort -k 1 | tail -1 | awk '{print $2}'`
     elif [[ ${resource} =~ ^(active|inactive)$ ]]; then
-	raw=`jq -r ".jobs[].lastBuild.timestamp" ${json}`
+	raw=`jq -r ".jobs[].lastBuild.timestamp" ${json} 2>/dev/null`
 	active=0
 	inactive=0
 	while read job; do
@@ -149,21 +149,21 @@ get_job_builds() {
     param1=${3}
     json=$(refresh_cache)
     if [[ ${resource} == 'health_score' ]]; then
-	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.healthReport[].score' ${json}`
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.healthReport[].score' ${json} 2>/dev/null`
     elif [[ ${resource} == 'last_result' ]]; then
-	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.result' ${json}`
+	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.result' ${json} 2>/dev/null`
 	if [[ ${raw} == "SUCCESS" ]]; then
 	    res=1
 	fi
     elif [[ ${resource} == 'last_timestamp' ]]; then
-	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.timestamp' ${json}`
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.timestamp' ${json} 2>/dev/null`
     elif [[ ${resource} == 'last_duration' ]]; then
-	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.duration' ${json}`
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.duration' ${json} 2>/dev/null`
     elif [[ ${resource} == 'last_number' ]]; then
-	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.number' ${json}`
+	res=`jq -r '.jobs[]|select(.name=="'${job}'")|.lastBuild.number' ${json} 2>/dev/null`
     elif [[ ${resource} =~ ^(failure|success)$ ]]; then
 	qfilter=`echo ${resource} | awk '{print toupper($0) }'`
-	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json}`
+	raw=`jq -r '.jobs[]|select(.name=="'${job}'")|.builds[]|select(.result=="'${qfilter}'")|.timestamp' ${json} 2>/dev/null`
 	res=0
 	if ! [[ -z ${raw} ]]; then
 	    while read build; do
@@ -196,7 +196,7 @@ get_stats() {
 	    res=$( get_job_builds ${resource} ${param1} ${param2} )
 	elif [[ ${name} == 'active' ]]; then
 	    json=$(refresh_cache)
-	    raw=`jq -r '.jobs[]|select(.name=="'${resource}'")|.lastBuild.timestamp' ${json}`
+	    raw=`jq -r '.jobs[]|select(.name=="'${resource}'")|.lastBuild.timestamp' ${json} 2>/dev/null`
 	    if [[ ${raw} != 'null' ]]; then
 		last=`echo $(( ${raw} / 1000 ))`
 		if (( $(( (${TIMESTAMP}-${last})/86400 )) < ${param1:-7} )); then
