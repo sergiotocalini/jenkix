@@ -13,7 +13,7 @@ APP_DIR=$(dirname $0)
 APP_VER="0.0.1"
 APP_WEB="http://www.sergiotocalini.com.ar/"
 TIMESTAMP=`date '+%s'`
-CACHE_DIR=${APP_DIR}/tmp
+CACHE_DIR="/tmp/$APP_NAME"
 CACHE_TTL=5                                      # IN MINUTES
 #
 #################################################################################
