@@ -36,7 +36,7 @@ ZABBIX_INC|/etc/zabbix/zabbix_agentd.d
 ## Zabbix
 ```
 ~# git clone https://github.com/sergiotocalini/jenkix.git
-~# ./deploy_zabbix.sh -h
+~# ./jenkix/deploy_zabbix.sh -h
 Usage:  [Options]
 
 Options:
