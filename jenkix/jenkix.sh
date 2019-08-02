@@ -231,20 +231,20 @@ get_service() {
 #################################################################################
 
 #################################################################################
-while getopts "s::a:s:uphvj:" OPTION; do
+while getopts ":a:hj:s:v" OPTION; do
     case ${OPTION} in
+	a)
+	    ARGS[${#ARGS[*]}]=${OPTARG//p=}
+	    ;;
 	h)
 	    usage
-	    ;;
-	s)
-	    SECTION="${OPTARG}"
 	    ;;
         j)
             JSON=1
             IFS=":" JSON_ATTR=(${OPTARG//p=})
             ;;
-	a)
-	    ARGS[${#ARGS[*]}]=${OPTARG//p=}
+	s)
+	    SECTION="${OPTARG}"
 	    ;;
 	v)
 	    version
