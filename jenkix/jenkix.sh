@@ -125,7 +125,7 @@ get_server_jobs() {
 	active=0
 	inactive=0
 	while read job; do
-	    json=$(echo ${json} | sed "s/null//g" | awk '{$1=$1};1')
+	    job=$(echo "${job}" | sed "s/null//g" | awk '{$1=$1};1')
 	    if [[ ${job} != '' ]]; then
 		last=$(( ${job} / 1000 ))
 		if (( $(( (${TIMESTAMP}-${last})/86400 )) < ${param1:-7} )); then
