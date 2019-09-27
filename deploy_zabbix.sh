@@ -6,6 +6,7 @@ usage() {
     echo "Usage: ${APP_NAME%.*} [Options]"
     echo ""
     echo "Options:"
+    echo "  -F            Force configuration overwrite."
     echo "  -c            Configuration key CACHE_DIR."
     echo "  -h            Displays this help message."
     echo "  -i            Installation prefix (SCRIPT_DIR)."
@@ -19,8 +20,11 @@ usage() {
     exit 1
 }
 
-while getopts ":c:f:i:j:p:t:u:z:h" OPTION; do
+while getopts ":c:f:i:j:p:t:u:z:Fh" OPTION; do
     case ${OPTION} in
+	F)
+	    FORCE=true
+	    ;;
 	c)
 	    CACHE_DIR="${OPTARG}"
 	    ;;
@@ -75,7 +79,7 @@ regex_cfg[4]="s|CACHE_TTL=.*|CACHE_TTL=\"${CACHE_TTL}\"|g"
 for index in ${!regex_cfg[*]}; do
     sed -i'' -e "${regex_cfg[${index}]}" "${SCRIPT_CFG}.new"
 done
-if [[ -f "${SCRIPT_CFG}" ]]; then
+if [[ -f "${SCRIPT_CFG}" && ${FORCE:-false} == false ]]; then
     state=$(cmp --silent "${SCRIPT_CFG}" "${SCRIPT_CFG}.new")
     if [[ ${?} == 0 ]]; then
 	rm "${SCRIPT_CFG}.new" 2>/dev/null
