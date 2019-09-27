@@ -89,7 +89,7 @@ SCRIPT_ZBX="${ZABBIX_INC}/jenkix.conf"
 cp -rpv "${SOURCE_DIR}/jenkix/zabbix_agentd.conf"   "${SCRIPT_ZBX}.new"
 regex_inc[0]="s|{PREFIX}|${SCRIPT_DIR}|g"
 for index in ${!regex_inc[*]}; do
-    sed -i '' -e "${regex_inc[${index}]}" "${SCRIPT_ZBX}.new"
+    sed -i'' -e "${regex_inc[${index}]}" "${SCRIPT_ZBX}.new"
 done
 if [[ -f "${SCRIPT_ZBX}" ]]; then
     state=$(cmp --silent "${SCRIPT_ZBX}" "${SCRIPT_ZBX}.new")
