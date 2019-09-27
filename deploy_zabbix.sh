@@ -19,7 +19,7 @@ usage() {
     exit 1
 }
 
-while getopts ":cfitz:hjpu" OPTION; do
+while getopts ":cfijptuz:h" OPTION; do
     case ${OPTION} in
 	c)
 	    CACHE_DIR="${OPTARG}"
