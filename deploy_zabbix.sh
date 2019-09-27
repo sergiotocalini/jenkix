@@ -73,7 +73,7 @@ regex_cfg[2]="s|JENKINS_PASS=.*|JENKINS_PASS=\"${JENKINS_PASS}\"|g"
 regex_cfg[3]="s|CACHE_DIR=.*|CACHE_DIR=\"${CACHE_DIR}\"|g"
 regex_cfg[4]="s|CACHE_TTL=.*|CACHE_TTL=\"${CACHE_TTL}\"|g"
 for index in ${!regex_cfg[*]}; do
-    sed -i '' -e "${regex_cfg[${index}]}" "${SCRIPT_CFG}.new"
+    sed -i'' -e "${regex_cfg[${index}]}" "${SCRIPT_CFG}.new"
 done
 if [[ -f "${SCRIPT_CFG}" ]]; then
     state=$(cmp --silent "${SCRIPT_CFG}" "${SCRIPT_CFG}.new")
