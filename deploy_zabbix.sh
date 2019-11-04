@@ -7,35 +7,38 @@ usage() {
     echo ""
     echo "Options:"
     echo "  -F            Force configuration overwrite."
+    echo "  -H            Displays this help message."
+    echo "  -P            Installation prefix (SCRIPT_DIR)."
+    echo "  -Z            Zabbix agent include files directory (ZABBIX_INC)."
     echo "  -c            Configuration key CACHE_DIR."
-    echo "  -h            Displays this help message."
-    echo "  -i            Installation prefix (SCRIPT_DIR)."
     echo "  -j            Configuration key JENKINS_URL."
     echo "  -p            Configuration key JENKINS_PASS."
     echo "  -t            Configuration key CACHE_TTL."
     echo "  -u            Configuration key JENKINS_USER."
-    echo "  -z            Zabbix agent include files directory (ZABBIX_INC)."
     echo ""
     echo "Please send any bug reports to sergiotocalini@gmail.com"
     exit 1
 }
 
-while getopts ":c:f:i:j:p:t:u:z:Fh" OPTION; do
+while getopts ":c:f:P:j:p:t:u:Z:FH" OPTION; do
     case ${OPTION} in
 	F)
 	    FORCE=true
 	    ;;
-	c)
-	    CACHE_DIR="${OPTARG}"
-	    ;;
-	h)
+	H)
 	    usage
 	    ;;
-	i)
+	P)
 	    SCRIPT_DIR="${OPTARG}"
 	    if [[ ! "${SCRIPT_DIR}" =~ .*jenkix ]]; then
 		SCRIPT_DIR="${SCRIPT_DIR}/jenkix"
 	    fi
+	    ;;
+	Z)
+	    ZABBIX_INC="${OPTARG}"
+	    ;;
+	c)
+	    CACHE_DIR="${OPTARG}"
 	    ;;
 	j)
 	    JENKINS_URL="${OPTARG}"
@@ -48,9 +51,6 @@ while getopts ":c:f:i:j:p:t:u:z:Fh" OPTION; do
 	    ;;
 	u)
 	    JENKINS_USER="${OPTARG}"
-	    ;;
-	z)
-	    ZABBIX_INC="${OPTARG}"
 	    ;;
         \?)
 	    exit 1

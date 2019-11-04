@@ -36,18 +36,19 @@ ZABBIX_INC|/etc/zabbix/zabbix_agentd.d
 ## Zabbix
 ```
 ~# git clone https://github.com/sergiotocalini/jenkix.git
-~# ./jenkix/deploy_zabbix.sh -h
+~# ./jenkix/deploy_zabbix.sh -H
 Usage:  [Options]
 
 Options:
+  -F            Force configuration overwrite.
+  -H            Displays this help message.
+  -P            Installation prefix (SCRIPT_DIR).
+  -Z            Zabbix agent include files directory (ZABBIX_INC).
   -c            Configuration key CACHE_DIR.
-  -h            Displays this help message.
-  -i            Installation prefix (SCRIPT_DIR).
   -j            Configuration key JENKINS_URL.
   -p            Configuration key JENKINS_PASS.
   -t            Configuration key CACHE_TTL.
   -u            Configuration key JENKINS_USER.
-  -z            Zabbix agent include files directory (ZABBIX_INC).
 
 Please send any bug reports to sergiotocalini@gmail.com
 ~# sudo ./jenkix/deploy_zabbix.sh -j "<JENKINS_URL>" \
