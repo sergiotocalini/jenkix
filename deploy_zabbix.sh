@@ -20,7 +20,7 @@ usage() {
     exit 1
 }
 
-while getopts ":c:f:P:j:p:t:u:Z:FH" OPTION; do
+while getopts ":c:j:p:t:u:P:Z:FH" OPTION; do
     case ${OPTION} in
 	F)
 	    FORCE=true
