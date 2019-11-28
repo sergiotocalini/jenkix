@@ -257,9 +257,10 @@ while getopts ":a:hj:s:v" OPTION; do
 done
 
 if [[ ${JSON} -eq 1 ]]; then
-    rval=$(discovery ${ARGS[*]})
     echo '{'
     echo '   "data":['
+    rval=$(discovery ${ARGS[*]})
+    total=`echo ${rval} | wc -l`
     count=1
     while read line; do
       if [[ ${line} != '' ]]; then
@@ -272,7 +273,7 @@ if [[ ${JSON} -eq 1 ]]; then
             fi
         done
         output+=' }'
-        if (( ${count} < `echo ${rval}|wc -l` )); then
+        if (( ${count} < ${total} )); then
             output="${output},"
         fi
         echo "      ${output}"
