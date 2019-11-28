@@ -73,9 +73,9 @@ discovery() {
     resource=${1}
     json=$(refresh_cache)
     if [[ ${resource} == 'jobs' ]]; then
-	for job in `jq -r '.jobs[].name' ${json} 2>/dev/null`; do
-	    echo "${job}"
-	done
+      for job in `jq -r '.jobs[].name' ${json} 2>/dev/null | sort`; do
+	       echo "${job}"
+      done
     fi
     return 0
 }
@@ -203,7 +203,7 @@ get_stats() {
 		if (( $(( (${TIMESTAMP}-${last})/86400 )) < ${param1:-7} )); then
 		    res=1
 		fi
-	    fi	    
+	    fi
 	fi
     fi
     echo ${res:-0}
@@ -262,6 +262,7 @@ if [[ ${JSON} -eq 1 ]]; then
     echo '   "data":['
     count=1
     while read line; do
+      if [[ ${line} != '' ]]; then
         IFS="|" values=(${line})
         output='{ '
         for val_index in ${!values[*]}; do
@@ -269,13 +270,14 @@ if [[ ${JSON} -eq 1 ]]; then
             if (( ${val_index}+1 < ${#values[*]} )); then
                 output="${output}, "
             fi
-        done 
+        done
         output+=' }'
         if (( ${count} < `echo ${rval}|wc -l` )); then
             output="${output},"
         fi
         echo "      ${output}"
-        let "count=count+1"
+      fi
+      let "count=count+1"
     done <<< ${rval}
     echo '   ]'
     echo '}'
@@ -285,7 +287,7 @@ else
         rcode="${?}"
     elif [[ ${SECTION} == 'service' ]]; then
 	rval=$( get_service ${ARGS[*]} )
-	rcode="${?}"	
+	rcode="${?}"
     else
 	rval=$( get_stats ${SECTION} ${ARGS[*]} )
 	rcode="${?}"
