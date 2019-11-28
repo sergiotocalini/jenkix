@@ -257,11 +257,11 @@ while getopts ":a:hj:s:v" OPTION; do
 done
 
 if [[ ${JSON} -eq 1 ]]; then
-    echo '{'
-    echo '   "data":['
     rval=$(discovery ${ARGS[*]})
     total=`echo ${rval} | wc -l`
     count=1
+    echo '{'
+    echo '   "data":['
     while read line; do
       if [[ ${line} != '' ]]; then
         IFS="|" values=(${line})
