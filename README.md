@@ -78,9 +78,9 @@ Options:
   -u            Configuration key JENKINS_USER.
 
 Please send any bug reports to sergiotocalini@gmail.com
-~# sudo ./jenkix/deploy_zabbix.sh -j "<JENKINS_URL>" \
-   				  -u "<JENKINS_USER>" \
-				  -p "<JENKINS_PASS>"
+~# sudo ./jenkix/deploy_zabbix.sh -j "${JENKINS_URL}" \
+   				  -u "${JENKINS_USER}" \
+				  -p "${JENKINS_PASS}"
 ~# sudo systemctl restart zabbix-agent
 ```
 
