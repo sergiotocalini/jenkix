@@ -3,26 +3,26 @@ Zabbix Agent - Jenkins
 
 # Dependencies
 ## Packages
-* ksh
-* jq
 * curl
+* jq
+* ksh
 * sudo
 
 ### Debian/Ubuntu
 ```
-~# sudo apt install ksh jq curl sudo
+~# sudo apt install curl jq ksh sudo
 ~#
 ```
 ### Red Hat
 ```
-~# sudo yum install ksh curl jq sudo
+~# sudo yum install curl jq ksh sudo
 ~#
 ```
 # Deploy
 ## Sudoers
 The deploy script is not intended to advise which approach you should implemented nor
-deploy the sudoers configuration but the user that will run the script needs be running
-with sudo privileges.
+deploy the sudoers configuration but the user that will run the script needs to have
+sudo privileges for some checks.
 
 There are two options to setting up sudoers for the user:
 1. Provided sudo all
@@ -41,6 +41,7 @@ Defaults:zabbix !syslog
 Defaults:zabbix !requiretty
 
 zabbix ALL=(ALL) NOPASSWD: /usr/bin/lsof *
+zabbix ALL=(ALL) NOPASSWD: /bin/ps *
 ~#
 ```
 ## Parameters
