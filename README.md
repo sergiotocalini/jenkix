@@ -60,7 +60,7 @@ ZABBIX_INC|/etc/zabbix/zabbix_agentd.d
 
 *__Note:__ this variables has to be saved in the config file (jenkix.conf) in the same directory than the script.*
 
-## Demo
+## Demo Deploy
 ```
 ~# git clone https://github.com/sergiotocalini/jenkix.git
 ~# ./jenkix/deploy_zabbix.sh -H
