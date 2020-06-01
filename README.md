@@ -3,21 +3,48 @@ Zabbix Agent - Jenkins
 
 # Dependencies
 ## Packages
-* ksh
-* jq
 * curl
+* jq
+* ksh
+* sudo
 
 ### Debian/Ubuntu
-
-    #~ sudo apt install ksh jq curl
-    #~
-
+```
+~# sudo apt install curl jq ksh sudo
+~#
+```
 ### Red Hat
-
-    #~ sudo yum install ksh curl jq
-    #~
-
+```
+~# sudo yum install curl jq ksh sudo
+~#
+```
 # Deploy
+## Sudoers
+The deploy script is not intended to advise which approach you should implemented nor
+deploy the sudoers configuration but the user that will run the script needs to have
+sudo privileges for some checks.
+
+There are two options to setting up sudoers for the user:
+1. Provided sudo all
+```bash
+~# cat /etc/sudoers.d/user_zabbix
+Defaults:zabbix !syslog
+Defaults:zabbix !requiretty
+
+zabbix	ALL=(ALL)  NOPASSWD:ALL
+~#
+```
+2. Limited acccess to run command with sudo
+```bash
+~# cat /etc/sudoers.d/user_zabbix
+Defaults:zabbix !syslog
+Defaults:zabbix !requiretty
+
+zabbix ALL=(ALL) NOPASSWD: /usr/bin/lsof *
+zabbix ALL=(ALL) NOPASSWD: /bin/ps *
+~#
+```
+## Parameters
 The username and the password can be empty if jenkins has the read only option enable.
 Default variables:
 
@@ -31,9 +58,9 @@ CACHE_TTL|5
 SCRIPT_DIR|/etc/zabbix/scripts/agentd/jenkix
 ZABBIX_INC|/etc/zabbix/zabbix_agentd.d
 
-*Note: this variables has to be saved in the config file (jenkix.conf) in the same directory than the script.*
+*__Note:__ this variables has to be saved in the config file (jenkix.conf) in the same directory than the script.*
 
-## Zabbix
+## Demo Deploy
 ```
 ~# git clone https://github.com/sergiotocalini/jenkix.git
 ~# ./jenkix/deploy_zabbix.sh -H
@@ -51,10 +78,10 @@ Options:
   -u            Configuration key JENKINS_USER.
 
 Please send any bug reports to sergiotocalini@gmail.com
-~# sudo ./jenkix/deploy_zabbix.sh -j "<JENKINS_URL>" \
-   				  -u "<JENKINS_USER>" \
-				  -p "<JENKINS_PASS>"
+~# sudo ./jenkix/deploy_zabbix.sh -j "${JENKINS_URL}" \
+   				  -u "${JENKINS_USER}" \
+				  -p "${JENKINS_PASS}"
 ~# sudo systemctl restart zabbix-agent
 ```
 
-*Note: the installation has to be executed on the zabbix agent host and you have to import the template on the zabbix web. The default installation directory is /etc/zabbix/scripts/agentd/jenkix*
+*__Note:__ the installation has to be executed on the zabbix agent host and you have to import the template on the zabbix web. The default installation directory is /etc/zabbix/scripts/agentd/jenkix*
